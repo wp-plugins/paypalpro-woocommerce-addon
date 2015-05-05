@@ -17,7 +17,7 @@ This plugin acts as an addon for woocommerce to add a payment method for WooComm
 1. Screenshot 1 - Api Key Location 
 2. Screenshot 2 - Admin Settings of Addon
 3. Screenshot 3 - Checkout Page Form
-4. Screenshot 4 - Service Avalaile Countries
+4. Screenshot 4 - Service Avalaible Countries
 == Installation ==
 
 1) Upload 'paypalpro-woocommerce-addon' folder to the '/wp-content/plugins/' directory
