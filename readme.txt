@@ -21,20 +21,33 @@ This plugin acts as an addon for woocommerce to add a payment method for WooComm
 == Installation ==
 
 1) Upload 'paypalpro-woocommerce-addon' folder to the '/wp-content/plugins/' directory
+
 2) Activate 'PayPal Pro Credit Cards WooCommerce Addon' from wp plugin lists in admin area
+
 3) Plugin will appear in settings of woocommerce
+
 4) You can set the addon settings from wocommmerce->settings->Checkout->PayPal Pro Cards Settings 
+
 5) You can check for Testing Card No 4417119669820331 ,Exp 11 / 2018 , CVV 874
 
 == Frequently Asked Questions ==
 1) You need to have woocoommerce plugin installed to make this plugin work
+
 2) You need to follow The Screeenshot 1 to obtain API keys from PayPal
+
 3) This plugin works on test & live api keys. 
+
 4) This plugin readily works on local.
+
 5) This plugin does nor requires SSL.
+
 6) This plugin does not store Card Details anywhere.
+
 7) This plugin requires CURL OpenSSL installed 
+
 8) This Plugin will only work for U.S Business 
+
+
 
 == Changelog ==
 This is first version no known errors found
