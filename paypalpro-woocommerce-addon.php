@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name: PayPal Pro Credit Cards WooCommerce Addon
- * Plugin URI: https://wordpress.org/plugins/stripe-woocommerce-addon/
- * Description: Add a feature in wocommerce for customers to pay with Cards Via Stripe.
+ * Plugin URI: https://wordpress.org/plugins/paypalpro-woocommerce-addon/
+ * Description: Add a feature in wocommerce for customers to pay with Cards Via Paypal.
  * Version: 1.0.0
  * Author: Syed Nazrul Hassan
  * Author URI: https://nazrulhassan.wordpress.com/
