@@ -1,4 +1,4 @@
-==== PayPal Pro CC WooCommerce Addon ====
+==== PayPal Pro CC Payment Gateway WooCommerce Addon ====
 Contributors: nazrulhassanmca
 Tags: woocommerce, paypal, woocommerce addon paypalpro, paypalpro cc for woocommerce,paypal pro for wordpress,paypal credit cards for woocommerce
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=nazrulhassan@ymail.com&item_name=Donation+PaypalProCC+Woocommerce+Addon
