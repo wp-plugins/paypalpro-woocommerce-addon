@@ -28,7 +28,7 @@ This plugin acts as an addon for woocommerce to add a payment method for WooComm
 
 4) You can set the addon settings from wocommmerce->settings->Checkout->PayPal Pro Cards Settings 
 
-5) You can check for Testing Card No 4417119669820331 ,Exp 11 / 2018 , CVV 874
+5) You can check for Testing Card No 4446283280247004,4417119669820331 ,Exp 11 / 2018 , CVV 874
 
 == Frequently Asked Questions ==
 1) You need to have woocoommerce plugin installed to make this plugin work
