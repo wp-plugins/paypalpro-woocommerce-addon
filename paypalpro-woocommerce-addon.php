@@ -61,7 +61,7 @@ if(class_exists('WC_Payment_Gateway'))
 		'enabled' => array(
 		  'title' => __( 'Enable/Disable', 'woocommerce' ),
 		  'type' => 'checkbox',
-		  'label' => __( 'Enable Stripe', 'woocommerce' ),
+		  'label' => __( 'Enable PayPal Pro Cards', 'woocommerce' ),
 		  'default' => 'yes'
 		  ),
 		'pppcc_title' => array(
