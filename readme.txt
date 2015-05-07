@@ -9,7 +9,7 @@ Stable tag: 1.0
 License: GPLv2
 
 == Description ==
-This plugin acts as an addon for woocommerce to add a payment method for WooCommerce for accepting credit card payments by merchants directly on your checkout page.PayPal Pro is only available to holders of a PayPal Pro merchant account.This Plugins uses **REST API** to communicate to paypal to handle payments.
+This plugin acts as an addon for woocommerce to add a payment method for WooCommerce for accepting credit card payments by merchants directly on your checkout page.**PayPal Pro** is only available to holders of a **PayPal Pro merchant account**.This Plugins uses **REST API** to communicate to paypal to handle payments But It does not ship REST API PHP SDK bundled with plugin this plugin directly makes a CURL call to create Access tokens & Charge the cards
 
 
 == Screenshots ==
@@ -45,11 +45,13 @@ This plugin acts as an addon for woocommerce to add a payment method for WooComm
 
 7) This plugin requires CURL OpenSSL installed 
 
-8) This Plugin will only work for U.S Business 
+8) This Plugin will only work for **PayPal Pro merchant account** In supported Countries
 
 9) For country support please check https://developer.paypal.com/webapps/developer/docs/classic/howto_product_matrix/  specifically https://developer.paypal.com/docs/integration/direct/rest_api_payment_country_currency_support/#direct-credit-card-payments
 
+10)Paypal Servers sometimes throw Internal Service Error during testing Multiple times with test credit card No. In that case try changing Card No. This may be due to different location of Buyer(This Point Is for TEST MODE Only)
 
+11)This plugin currently supports USD but On line no 249 of the main pugin file you can change the currency code in which you like to accept the payments.
 
 == Changelog ==
 This is first version no known errors found
