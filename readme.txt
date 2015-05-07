@@ -9,7 +9,7 @@ Stable tag: 1.0
 License: GPLv2
 
 == Description ==
-This plugin acts as an addon for woocommerce to add a payment method for WooCommerce for accepting credit card payments by merchants directly on your checkout page.PayPal Pro is only available to holders of a PayPal Pro merchant account.This Plugins uses REST API to communicate to paypal to handle payments.
+This plugin acts as an addon for woocommerce to add a payment method for WooCommerce for accepting credit card payments by merchants directly on your checkout page.PayPal Pro is only available to holders of a PayPal Pro merchant account.This Plugins uses **REST API** to communicate to paypal to handle payments.
 
 
 == Screenshots ==
