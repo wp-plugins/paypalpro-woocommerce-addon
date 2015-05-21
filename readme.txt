@@ -4,7 +4,7 @@ Tags: woocommerce, paypal, woocommerce addon paypalpro, paypalpro cc for woocomm
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=nazrulhassan@ymail.com&item_name=Donation+PaypalProCC+Woocommerce+Addon
 Requires at least: 4.0
 Author: nazrulhassanmca
-Tested up to: 4.2.1 & Woocommerce 2.3.8
+Tested up to: 4.2.2 & Woocommerce 2.3.9
 Stable tag: 1.0
 License: GPLv2
 
@@ -20,38 +20,26 @@ This plugin acts as an addon for woocommerce to add a payment method for WooComm
 4. Screenshot 4 - Service Avalaible Countries
 == Installation ==
 
-1) Upload 'paypalpro-woocommerce-addon' folder to the '/wp-content/plugins/' directory
-
-2) Activate 'PayPal Pro Credit Cards WooCommerce Addon' from wp plugin lists in admin area
-
-3) Plugin will appear in settings of woocommerce
-
-4) You can set the addon settings from wocommmerce->settings->Checkout->PayPal Pro Cards Settings 
-
-5) You can check for Testing Card No 4446283280247004,4417119669820331 ,Exp 11 / 2018 , CVV 874
+1. Upload 'paypalpro-woocommerce-addon' folder to the '/wp-content/plugins/' directory
+2. Activate 'PayPal Pro Credit Cards WooCommerce Addon' from wp plugin lists in admin area
+3. Plugin will appear in settings of woocommerce
+4. You can set the addon settings from wocommmerce->settings->Checkout->PayPal Pro Cards Settings 
+5. You can check for Testing Card No 4446283280247004,4417119669820331 ,Exp 11 / 2018 , CVV 874
 
 == Frequently Asked Questions ==
-1) You need to have woocoommerce plugin installed to make this plugin work
-
-2) You need to follow The Screeenshot 1 to obtain API keys from PayPal
-
-3) This plugin works on test & live api keys. 
-
-4) This plugin readily works on local.
-
-5) This plugin does nor requires SSL.
-
-6) This plugin does not store Card Details anywhere.
-
-7) This plugin requires CURL OpenSSL installed 
-
-8) This Plugin will only work for **PayPal Pro merchant account** In supported Countries
-
-9) For country support please check https://developer.paypal.com/webapps/developer/docs/classic/howto_product_matrix/  specifically https://developer.paypal.com/docs/integration/direct/rest_api_payment_country_currency_support/#direct-credit-card-payments
-
-10)Paypal Servers sometimes throw Internal Service Error during testing Multiple times with test credit card No. In that case try changing Card No. This may be due to different location of Buyer(This Point Is for TEST MODE Only)
-
-11)This plugin currently supports USD but On line no 249 of the main pugin file you can change the currency code in which you like to accept the payments.
+1. You need to have woocoommerce plugin installed to make this plugin work
+2. You need to follow The Screeenshot 1 to obtain API keys from PayPal
+3. This plugin works on test & live api keys. 
+4. This plugin readily works on local.
+5. This plugin does nor requires SSL.
+6. This plugin does not store Card Details anywhere.
+7. This plugin requires CURL OpenSSL installed 
+8. This Plugin will only work for **PayPal Pro merchant account** In supported Countries
+9. For country support please check https://developer.paypal.com/webapps/developer/docs/classic/howto_product_matrix/  specifically https://developer.paypal.com/docs/integration/direct/rest_api_payment_country_currency_support/#direct-credit-card-payments
+10. Paypal Servers sometimes throw Internal Service Error during testing Multiple times with test credit card No. In that case try changing Card No. This may be due to different location of Buyer(This Point Is for TEST MODE Only)
+11. This plugin currently supports USD but On line no 249 of the main pugin file you can change the currency code in which you like to accept the payments.
+12. This plugin does not support Pre Order or Subscriptions 
+13. This plugin does not support Refunds in woocommmerce interface
 
 == Changelog ==
 This is first version no known errors found
