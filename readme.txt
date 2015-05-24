@@ -50,15 +50,13 @@ This plugin acts as an addon for woocommerce to add a payment method for WooComm
 10. This plugin currently supports USD but On line no 249 of the main pugin file you can change the currency code in which you like to accept the payments.
 11. This plugin does not support Pre Order or Subscriptions 
 12. This plugin does not support Refunds in woocommmerce interface(Once users are using this plugin refund code will be avalaible)
+13. Paypal Servers sometimes throw Internal Service Error during testing Multiple times with test credit card No. In that case try changing Card No. This may be due to different location of Buyer(This Point Is for TEST MODE Only)
 
 See Below
 
 	1. https://developer.paypal.com/webapps/developer/docs/classic/howto_product_matrix/
 	2. https://developer.paypal.com/docs/integration/direct/rest_api_payment_country_currency_support/#direct-credit-card-payments
 
-
-
-13. Paypal Servers sometimes throw Internal Service Error during testing Multiple times with test credit card No. In that case try changing Card No. This may be due to different location of Buyer(This Point Is for TEST MODE Only)
 
 
 == Changelog ==
