@@ -1,6 +1,6 @@
 ==== PayPal Pro CC Payment Gateway WooCommerce Addon ====
 Contributors: nazrulhassanmca
-Tags: woocommerce, paypal, woocommerce addon paypalpro, paypalpro cc for woocommerce,paypal pro for wordpress,paypal credit cards for woocommerce
+Tags: woocommerce, paypal, woocommerce addon paypalpro, paypalpro cc for woocommerce,paypal pro for wordpress,paypal credit cards for woocommerce,PayPalPro REST api,wordpress paypalpro woocommerce,paypalpro woocommerce,woocommerce paypalpro wordpress
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=nazrulhassan@ymail.com&item_name=Donation+PaypalProCC+Woocommerce+Addon
 Requires at least: 4.0
 Author: nazrulhassanmca
@@ -52,7 +52,7 @@ This plugin acts as an addon for woocommerce to add a payment method for WooComm
 12. This plugin does not support Refunds in woocommmerce interface(Once users are using this plugin refund code will be avalaible)
 13. Paypal Servers sometimes throw Internal Service Error during testing Multiple times with test credit card No. In that case try changing Card No. This may be due to different location of Buyer(This Point Is for TEST MODE Only)
 
-See Below
+See Below for REST API Supported COuntries
 
 	1. https://developer.paypal.com/docs/integration/direct/rest_api_payment_country_currency_support/#direct-credit-card-payments
 
