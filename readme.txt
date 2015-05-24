@@ -54,8 +54,7 @@ This plugin acts as an addon for woocommerce to add a payment method for WooComm
 
 See Below
 
-	1. https://developer.paypal.com/webapps/developer/docs/classic/howto_product_matrix/
-	2. https://developer.paypal.com/docs/integration/direct/rest_api_payment_country_currency_support/#direct-credit-card-payments
+	1. https://developer.paypal.com/docs/integration/direct/rest_api_payment_country_currency_support/#direct-credit-card-payments
 
 
 
