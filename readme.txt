@@ -2,7 +2,7 @@
 Contributors: nazrulhassanmca
 Tags: woocommerce, paypal, woocommerce addon paypalpro, paypalpro cc for woocommerce,paypal pro for wordpress,paypal credit cards for woocommerce,PayPalPro REST api,wordpress paypalpro woocommerce,paypalpro woocommerce,woocommerce paypalpro wordpress
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=nazrulhassan@ymail.com&item_name=Donation+PaypalProCC+Woocommerce+Addon
-Requires at least: 4.0
+Requires at least: 4.0 & WooCommerce 2.2+
 Author: nazrulhassanmca
 Tested up to: 4.2.2 & Woocommerce 2.3.9
 Stable tag: 1.0
@@ -22,6 +22,8 @@ This plugin acts as an addon for woocommerce to add a payment method for WooComm
 11. Single checkbox to put it in live/test mode.
 12. This plugin **does not store Credit Card Details**.
 13. This plugin is designed to work **Only On REST API**
+14. Single checkbox to put it in Authorize or Authorize & Capture.
+15. This plugin Support to accept card types.
 
 == Screenshots ==
 
