@@ -3,7 +3,7 @@
  * Plugin Name: PayPal Pro Credit Cards WooCommerce Addon
  * Plugin URI: https://wordpress.org/plugins/paypalpro-woocommerce-addon/
  * Description: Add a feature in wocommerce for customers to pay with Cards Via Paypal.
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: Syed Nazrul Hassan
  * Author URI: https://nazrulhassan.wordpress.com/
  * License: GPL2
@@ -33,15 +33,37 @@ if(class_exists('WC_Payment_Gateway'))
 		$this->method_title     = 'PayPal Pro Cards Settings';		
 		$this->init_form_fields();
 		$this->init_settings();
+		$this->supports                 = array(  'products',  'refunds');
 		$this->title               	  = $this->get_option( 'pppcc_title' );
 		$this->pppcc_appid      		  = $this->get_option( 'pppcc_appid' );
 		$this->pppcc_secret     		  = $this->get_option( 'pppcc_secret' );
-		$this->pppcc_sandbox            = $this->get_option( 'pppcc_sandbox' ); 
+		$this->pppcc_sandbox            = $this->get_option( 'pppcc_sandbox' );
+		$this->pppcc_authorize_only     = $this->get_option( 'pppcc_authorize_only' ); 
+		$this->pppcc_cardtypes          = $this->get_option( 'pppcc_cardtypes'); 
 
-		define("PAYPALPROCC_SANDBOX", ($this->pppcc_sandbox=='yes'? true : false));
+		if(!defined("PAYPALPROCC_SANDBOX"))
+		 { define("PAYPALPROCC_SANDBOX", ($this->pppcc_sandbox=='yes'? true : false)); }
+		if(!defined("PAYPALPROCC_INTENT"))
+		 { define("PAYPALPROCC_INTENT",$this->pppcc_authorize_only=='yes'? 'authorize' : 'sale'); }
+		if(PAYPALPROCC_SANDBOX == 'yes')
+		{ 
+		  if(!defined("API_TOKEN_URL"))
+		  { define("API_TOKEN_URL", "https://api.sandbox.paypal.com/v1/oauth2/token"); }
+		  if(!defined("API_PAYMT_URL"))
+		  { define("API_PAYMT_URL", "https://api.sandbox.paypal.com/v1/payments/payment"); }
+		}
+		else
+		{ 
+		  if(!defined("API_TOKEN_URL"))
+		  { define("API_TOKEN_URL", "https://api.paypal.com/v1/oauth2/token"); }
+		  if(!defined("API_PAYMT_URL"))
+		  { define("API_PAYMT_URL", "https://api.paypal.com/v1/payments/payment"); }
+		}
 
-		add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
-
+		if(is_admin())
+		{	
+			add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
+		}
 		}
 
 		public function admin_options()
@@ -96,6 +118,32 @@ if(class_exists('WC_Payment_Gateway'))
 		  'label'       => __( 'Enable PayPal Pro sandbox', 'woocommerce' ),
 		  'default'     => 'no',
 		  'description' => __( 'If checked its in sanbox mode and if unchecked its in live mode', 'woocommerce' )
+		),
+		
+		'pppcc_authorize_only' => array(
+			 'title'       => __( 'Authorize Only', 'woocommerce' ),
+			 'type'        => 'checkbox',
+			 'label'       => __( 'Enable Authorize Only Mode (Authorize & Capture If Unchecked)', 'woocommerce' ),
+			 'description' => __( 'If checked will only authorize the credit card only upon checkout.', 'woocommerce' ),
+			 'desc_tip'      => true,
+			 'default'     => 'no',
+		),
+		
+		'pppcc_cardtypes' => array(
+		 'title'    => __( 'Accepted Cards', 'woocommerce' ),
+		 'type'     => 'multiselect',
+		 'class'    => 'chosen_select',
+		 'css'      => 'width: 350px;',
+		 'desc_tip' => __( 'Select the card types to accept.', 'woocommerce' ),
+		 'options'  => array(
+			'mastercard'       => 'MasterCard',
+			'visa'             => 'Visa',
+			'discover'         => 'Discover',
+			'amex' 		       => 'American Express',
+			'jcb'		       => 'JCB',
+			'dinersclub'       => 'Dinners Club',
+		 ),
+		 'default' => array( 'mastercard', 'visa', 'discover', 'amex' ),
 		)
 		
 	  );
@@ -143,42 +191,44 @@ if(class_exists('WC_Payment_Gateway'))
 		</table>
 	        <?php  
 		} // end of public function payment_fields()
-
-		public function process_payment($order_id)
+		
+		/*Get or Set access token if needed renew and save to db*/
+		public function getsetaccesstoken()
 		{
-		global $woocommerce;
-		$wc_order 	= new WC_Order( $order_id );
-		$grand_total 	= $wc_order->order_total;
+			$pppwooaddon_values  =  get_option('pppwooaddon_values', true );
+		    $expires_at = isset( $pppwooaddon_values['expires_at'] ) ? esc_attr( $pppwooaddon_values['expires_at'] ) : '';
 		
-		if(PAYPALPROCC_SANDBOX == 'yes')
-		{ 
-		 define("API_TOKEN_URL", "https://api.sandbox.paypal.com/v1/oauth2/token");
-		 define("API_PAYMT_URL", "https://api.sandbox.paypal.com/v1/payments/payment");
-		}
-		else
-		{ 
-		 define("API_TOKEN_URL", "https://api.paypal.com/v1/oauth2/token");
-		 define("API_PAYMT_URL", "https://api.paypal.com/v1/payments/payment");
-		}
+		if($expires_at  < time() || empty($expires_at) || '' == $expires_at || NULL == $expires_at )
+		{
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL, API_TOKEN_URL);
+			curl_setopt($ch, CURLOPT_HEADER, false);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+			curl_setopt($ch, CURLOPT_POST, true);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); 
+			curl_setopt($ch, CURLOPT_USERPWD, $this->pppcc_appid.":".$this->pppcc_secret);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, "grant_type=client_credentials");
 
-		
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, API_TOKEN_URL);
-		curl_setopt($ch, CURLOPT_HEADER, false);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-		curl_setopt($ch, CURLOPT_POST, true);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); 
-		curl_setopt($ch, CURLOPT_USERPWD, $this->pppcc_appid.":".$this->pppcc_secret);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, "grant_type=client_credentials");
-
-		$result = curl_exec($ch);
+			$result = curl_exec($ch);
 
 			
-		$json = json_decode($result);
-		$access_token = $json->access_token;
-		curl_close($ch);
+			$json = json_decode($result);
+			$access_token = $json->access_token;
+			curl_close($ch);
+			$expires_at = time() + $json->expires_in - 1000 ; 
+			update_option('pppwooaddon_values',array('expires_at'=>$expires_at,'access_token'=>$access_token));
+			return $access_token;
+		}
+		else
+		{
+			$access_token   = isset( $pppwooaddon_values['access_token'] ) ? esc_attr( $pppwooaddon_values['access_token'] ) : '';
+			return $access_token;
+		}
 		
-		function cardType($number)
+		}// end of setgetaccesstoken 
+		
+		/*Get Card Types*/
+		function get_card_type($number)
 		{
 		    $number=preg_replace('/[^\d]/','',$number);
 		    if (preg_match('/^3[47][0-9]{13}$/',$number))
@@ -187,7 +237,7 @@ if(class_exists('WC_Payment_Gateway'))
 		    }
 		    elseif (preg_match('/^3(?:0[0-5]|[68][0-9])[0-9]{11}$/',$number))
 		    {
-		        return 'Diners Club';
+		        return 'dinersclub';
 		    }
 		    elseif (preg_match('/^6(?:011|5[0-9][0-9])[0-9]{12}$/',$number))
 		    {
@@ -209,16 +259,63 @@ if(class_exists('WC_Payment_Gateway'))
 		    {
 		        return 'unknown';
 		    }
+		}// End of getcard type function
+		
+		
+		//Function to check IP
+		function get_client_ip() 
+		{
+			$ipaddress = '';
+			if (getenv('HTTP_CLIENT_IP'))
+				$ipaddress = getenv('HTTP_CLIENT_IP');
+			else if(getenv('HTTP_X_FORWARDED_FOR'))
+				$ipaddress = getenv('HTTP_X_FORWARDED_FOR');
+			else if(getenv('HTTP_X_FORWARDED'))
+				$ipaddress = getenv('HTTP_X_FORWARDED');
+			else if(getenv('HTTP_FORWARDED_FOR'))
+				$ipaddress = getenv('HTTP_FORWARDED_FOR');
+			else if(getenv('HTTP_FORWARDED'))
+				$ipaddress = getenv('HTTP_FORWARDED');
+			else if(getenv('REMOTE_ADDR'))
+				$ipaddress = getenv('REMOTE_ADDR');
+			else
+				$ipaddress = '0.0.0.0';
+			return $ipaddress;
 		}
+		
+		
+		
+		
+		public function process_payment($order_id)
+		{
+		global $woocommerce;
+		$wc_order 	= new WC_Order( $order_id );
+		$grand_total 	= $wc_order->order_total;
+		
+		$cardtype = $this->get_card_type(sanitize_text_field($_POST['pppcc_cardno']));
+		
+		if(!in_array($cardtype ,$this->pppcc_cardtypes ))
+         		{
+         			wc_add_notice('Merchant do not support accepting in '.$cardtype,  $notice_type = 'error' );
+         			return array (
+								'result'   => 'success',
+								'redirect' => WC()->cart->get_checkout_url(),
+							   );
+				die;
+         		}
+
+		
+		
+		//End of function to check IP
 		  
 		$pppcc_cardno   = sanitize_text_field($_POST['pppcc_cardno']);
 		$pppcc_expmonth = sanitize_text_field($_POST['pppcc_expmonth']);
 		$pppcc_expyear  = sanitize_text_field($_POST['pppcc_expyear']);
 		$pppcc_cardcvv  = sanitize_text_field($_POST['pppcc_cardcvv']);
-		$pppcc_cardtype = cardType($pppcc_cardno); 
+		$pppcc_cardtype = $this->get_card_type($pppcc_cardno); 
+		$access_token   = $this->getsetaccesstoken() ;
 	
-	
-		$data_string = '{"intent":"sale",
+		$data_string = '{"intent":"'.PAYPALPROCC_INTENT.'",
 				  "payer":{
 				    "payment_method":"credit_card",
 				    "funding_instruments":[
@@ -247,15 +344,12 @@ if(class_exists('WC_Payment_Gateway'))
 				      "amount":{
 				        "total":"'.$grand_total.'",
 				        "currency":"USD"
-				        
 				      },
-				      "description":"'.$wc_order->id.'"
+				      "description":"'.get_bloginfo('blogname').' Order #'.$wc_order->get_order_number().'"
 				    }
 				  ]
 				}';
-		
-				
-		
+
 		
 		// process payment
 		$pay = curl_init();	
@@ -265,12 +359,11 @@ if(class_exists('WC_Payment_Gateway'))
 		curl_setopt($pay, CURLOPT_POST, true);
 		curl_setopt($pay, CURLOPT_RETURNTRANSFER, true);                                                                     
 		curl_setopt($pay, CURLOPT_CUSTOMREQUEST, "POST");                                                                     
-		curl_setopt($pay, CURLOPT_POSTFIELDS, $data_string);                                                                  
-		curl_setopt($pay, CURLOPT_RETURNTRANSFER, true);                                                                      
+		curl_setopt($pay, CURLOPT_POSTFIELDS, $data_string);             
 		curl_setopt($pay, CURLOPT_HTTPHEADER, array(                                                                          
 					'Content-Type: application/json; charset=utf-8', 
 					'Authorization: Bearer '.$access_token,
-				        'Content-Length:'.strlen($data_string))      
+				     'Content-Length:'.strlen($data_string))      
 			);                                                                                                                   
 		
 		$paymentresult = curl_exec($pay);
@@ -283,8 +376,12 @@ if(class_exists('WC_Payment_Gateway'))
 		{
 			
 			$wc_order->add_order_note( __( 'Paypal payment completed at. '.$paymentarray['create_time'].' with Charge ID = '.$paymentarray['id'].' and State='.$paymentarray['state'] , 'woocommerce' ) );
-			$wc_order->add_order_note( __( 'Full Payment Details. '.$paymentresult, 'woocommerce' ) );
-			$wc_order->payment_complete();
+			//$wc_order->add_order_note( __( 'Full Payment Details. '.$paymentresult, 'woocommerce' ) );
+			
+			$wc_order->payment_complete($paymentarray['id']);
+			
+			add_post_meta( $order_id, '_'.$order_id.'_'.$paymentarray['id'].'_metas', $paymentresult);
+			
 			return array (
 			  'result'   => 'success',
 			  'redirect' => $this->get_return_url( $wc_order ),
@@ -299,7 +396,117 @@ if(class_exists('WC_Payment_Gateway'))
 
 
 
-		} // end of function process_payment()
+		} // end of function process_payment() 
+
+		
+		
+		
+		// process refund
+		public function process_refund( $order_id, $amount = NULL, $reason = '' )
+		{
+			global $woocommerce;
+		     $wc_order 	= new WC_Order( $order_id );
+			$trx_id		= get_post_meta( $order_id , '_transaction_id', true );
+			$trx_metas   	= get_post_meta( $order_id , '_'.$order_id.'_'.$trx_id.'_metas',true);
+			$trx_metas_val = json_decode($trx_metas,true);
+			
+			
+			$saleid     = @$trx_metas_val['transactions'][0]['related_resources'][0]['sale']['id'] ;
+			$authid     = @$trx_metas_val['transactions'][0]['related_resources'][0]['authorization']['id'] ;
+			
+			$saleamount = @$trx_metas_val['transactions'][0]['related_resources'][0]['sale']['amount']['total'] ;
+			$authamount = @$trx_metas_val['transactions'][0]['related_resources'][0]['authorization']['amount']['total'] ;
+			
+			//echo '40din'.$saleid.$saleamount.$authid.$authamount; return false; die;
+			
+			$access_token = $this->getsetaccesstoken() ;
+			
+			if( $amount > $saleamount && $saleamount > 0 )
+			{return false; }
+			
+			else
+			{
+			
+				
+			if($saleid) 
+			{
+				$data_string =	'{
+				  "amount":
+				  {
+				    "total": "'.$amount.'",
+				    "currency": "USD"
+				  }
+				}';
+				$ref = curl_init();	
+				curl_setopt($ref, CURLOPT_URL, "https://api.sandbox.paypal.com/v1/payments/sale/".$saleid."/refund");
+				curl_setopt($ref, CURLOPT_HEADER, false);
+				curl_setopt($ref, CURLOPT_SSL_VERIFYPEER, false);
+				curl_setopt($ref, CURLOPT_POST, true);
+				curl_setopt($ref, CURLOPT_RETURNTRANSFER, true);                                                                     
+				curl_setopt($ref, CURLOPT_CUSTOMREQUEST, "POST");                                                                     
+				curl_setopt($ref, CURLOPT_POSTFIELDS, $data_string);                                                                       
+				curl_setopt($ref, CURLOPT_HTTPHEADER, array(                                                                          
+							'Content-Type: application/json; charset=utf-8', 
+							'Authorization: Bearer '.$access_token,
+							'Content-Length:'.strlen($data_string))      
+					);                                                                                                                   
+			
+				$refundresult = curl_exec($ref);
+				curl_close($ref);
+				
+				$refundarray = json_decode($refundresult,true);
+				if($refundarray['id'])
+				{
+					$wc_order->add_order_note( __( 'Paypal refund for '.$refundarray['parent_payment'].' completed at. '.$refundarray['create_time'].' with ID = '.$refundarray['id'].' and State='.$refundarray['state'] , 'woocommerce' ) );
+					add_post_meta( $order_id, '_'.$order_id.'_'.$refundarray['id'].'_metas', $refundresult);
+					return true;
+				}
+				else
+				{
+					$wc_order->add_order_note( __( 'Transaction Details. '.$refundresult, 'woocommerce' ) );
+					return false;
+				}
+			}
+			
+			//processing for return true or false 
+			}
+			
+			if($amount > $authamount && $authamount > 0 )
+			{return false;}
+			else
+			{
+				$void = curl_init();	
+				curl_setopt($void, CURLOPT_URL, "https://api.sandbox.paypal.com/v1/payments/authorization/".$authid."/void");
+				curl_setopt($void, CURLOPT_HEADER, false);
+				curl_setopt($void, CURLOPT_SSL_VERIFYPEER, false);
+				curl_setopt($void, CURLOPT_POST, true);
+				curl_setopt($void, CURLOPT_RETURNTRANSFER, true);    				
+				curl_setopt($void, CURLOPT_CUSTOMREQUEST, "POST");
+				curl_setopt($void, CURLOPT_HTTPHEADER, array(      
+							'Content-Type: application/json; charset=utf-8', 
+							'Authorization: Bearer '.$access_token)      
+					);                                                                                                                   
+			
+				$voidresult = curl_exec($void);
+				curl_close($void);
+				
+				$voidarray = json_decode($voidresult,true);
+				if($voidarray['id'])
+				{
+				$wc_order->add_order_note( __( 'Paypal Void for '.$voidarray['parent_payment'].' completed at. '.$voidarray['create_time'].' with ID = '.$voidarray['id'].' and State='.$voidarray['state'] , 'woocommerce' ) );
+					add_post_meta( $order_id, '_'.$order_id.'_'.$voidarray['id'].'_metas', $voidresult);
+					return true;
+				}	
+				else
+				{
+					$wc_order->add_order_note( __( 'Transaction Details. '.$voidresult, 'woocommerce' ) );
+					return false;
+				}
+			}
+
+			return false;
+
+		}
 
 	}  // end of class WC_Pppcc_Gateway
 
