@@ -20,11 +20,12 @@ This plugin acts as an addon for woocommerce to add a payment method for WooComm
 7. Can work with test/sandbox mode.
 8. It does not needs SSL.
 11. Single checkbox to put it in live/test mode.
-12. This plugin **does not store Credit Card Details**.
+12. This plugin does not store **Credit Card Details**.
 13. This plugin is designed to work **Only On REST API**
 14. Single checkbox to put it in Authorize or Authorize & Capture.
 15. This plugin Support to accept card types.
-16. The Transaction details array returned from gateway are added to post meta of wordpress 
+16. This plugin does support Refunds in woocommmerce interface
+17. The Transaction details array returned from gateway are added to post meta of wordpress 
 
 == Screenshots ==
 
