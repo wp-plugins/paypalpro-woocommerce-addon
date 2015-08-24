@@ -4,8 +4,8 @@ Tags: woocommerce, paypal, woocommerce addon paypalpro, paypalpro cc for woocomm
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=nazrulhassan@ymail.com&item_name=Donation+PaypalProCC+Woocommerce+Addon
 Requires at least: 4.0 & WooCommerce 2.2+
 Author: nazrulhassanmca
-Tested up to: 4.3 & Woocommerce 2.4.4
-Stable tag: 1.0.1
+Tested up to: 4.3 & Woocommerce 2.4.6
+Stable tag: 1.0.2
 License: GPLv2
 
 == Description ==
