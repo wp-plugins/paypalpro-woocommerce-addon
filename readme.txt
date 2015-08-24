@@ -23,7 +23,7 @@ This plugin acts as an addon for woocommerce to add a payment method for WooComm
 12. This plugin does not store **Credit Card Details**.
 13. This plugin is designed to work **Only On REST API**
 14. Single checkbox to put it in Authorize or Authorize & Capture.
-15. This plugin Support to accept card types.
+15. This plugin Support to accept card types with dynamic card logo at checkout.
 16. This plugin does support Refunds in woocommmerce interface
 17. The Transaction details array returned from gateway are added to post meta of wordpress 
 
@@ -47,12 +47,12 @@ This plugin acts as an addon for woocommerce to add a payment method for WooComm
 2. You need to follow The Screeenshot 1 to obtain API keys from PayPal
 3. This plugin works on test & live api keys. 
 4. This plugin readily works on local.
-5. This plugin does nor requires SSL.
+5. This plugin does not requires SSL.
 6. This plugin does not store Card Details anywhere.
 7. This plugin requires CURL OpenSSL installed 
 8. This Plugin will only work for **PayPal Pro merchant account** In supported Countries
 9. For country support please check 
-10. This plugin currently supports USD but On line no 249 of the main pugin file you can change the currency code in which you like to accept the payments.
+10. This plugin currently supports USD but On line no 470 of the main pugin file you can change the currency code in which you like to accept the payments.
 11. This plugin does not support Pre Order or Subscriptions 
 12. This plugin does support Refunds in woocommmerce interface
 13. Paypal Servers sometimes throw Internal Service Error during testing Multiple times with test credit card No. In that case try changing Card No. This may be due to different location of Buyer(This Point Is for TEST MODE Only)

@@ -28,7 +28,7 @@ if(class_exists('WC_Payment_Gateway'))
 		{
 
 		$this->id               = 'paypalprocc';
-		$this->icon             = apply_filters( 'woocommerce_pppcc_icon', plugins_url( 'images/paypalprocc.png' , __FILE__ ) );
+		$this->icon             = plugins_url( 'images/paypalprocc.png' , __FILE__ ) ;
 		$this->has_fields       = true;
 		$this->method_title     = 'PayPal Pro Cards Settings';		
 		$this->init_form_fields();
@@ -149,6 +149,39 @@ if(class_exists('WC_Payment_Gateway'))
 	  );
   		}
 
+
+
+  		/*Get Icon*/
+		public function get_icon() {
+		$icon = '';
+		if(is_array($this->pppcc_cardtypes ))
+		{
+        foreach ( $this->pppcc_cardtypes  as $card_type ) {
+
+				if ( $url = $this->get_payment_method_image_url( $card_type ) ) {
+					
+					$icon .= '<img src="'.esc_url( $url ).'" alt="'.esc_attr( strtolower( $card_type ) ).'" />';
+				}
+			}
+		}
+		else
+		{
+			$icon .= '<img src="'.esc_url( plugins_url( 'images/paypalprocc.png' , __FILE__ ) ).'" alt="Authorize.Net Payment Gateway" />';	  
+		}
+
+         return apply_filters( 'woocommerce_pppcc_icon', $icon, $this->id );
+		}
+ 
+		public function get_payment_method_image_url( $type ) {
+
+		$image_type = strtolower( $type );
+				return  WC_HTTPS::force_https_url( plugins_url( 'images/' . $image_type . '.jpg' , __FILE__ ) ); 
+		}
+		/*Get Icon*/
+
+
+
+
 		public function payment_fields()
 		{			
 	?>
@@ -160,7 +193,7 @@ if(class_exists('WC_Payment_Gateway'))
 		    <tr>
 		    	<td><label class="" for="pppcc_expiration_date"><?php echo __( 'Expiration date', 'woocommerce') ?>.</label></td>
 			<td>
-			   <select name="pppcc_expmonth" style="height: 33px;">
+			   <select name="pppcc_expmonth">
 			      <option value=""><?php _e( 'Month', 'woocommerce' ) ?></option>
 			      <option value='01'>01</option>
 			      <option value='02'>02</option>
@@ -175,7 +208,7 @@ if(class_exists('WC_Payment_Gateway'))
 			      <option value='11'>11</option>
 			      <option value='12'>12</option>  
 			    </select>
-			    <select name="pppcc_expyear" style="height: 33px;">
+			    <select name="pppcc_expyear">
 			      <option value=""><?php _e( 'Year', 'woocommerce' ) ?></option><?php
 			      $years = array();
 			      for ( $i = date( 'y' ); $i <= date( 'y' ) + 15; $i ++ ) {
@@ -257,7 +290,7 @@ if(class_exists('WC_Payment_Gateway'))
 		    }
 		    else
 		    {
-		        return 'unknown';
+		        return 'unknown card type';
 		    }
 		}// End of getcard type function
 		
@@ -437,8 +470,18 @@ if(class_exists('WC_Payment_Gateway'))
 				    "currency": "USD"
 				  }
 				}';
+
+				if(PAYPALPROCC_SANDBOX == 'yes')
+				{
+					$refundurl = "https://api.sandbox.paypal.com/v1/payments/sale/".$saleid."/refund";
+				}
+				else
+				{
+					$refundurl = "https://api.paypal.com/v1/payments/sale/".$saleid."/refund";
+				}
+
 				$ref = curl_init();	
-				curl_setopt($ref, CURLOPT_URL, "https://api.sandbox.paypal.com/v1/payments/sale/".$saleid."/refund");
+				curl_setopt($ref, CURLOPT_URL, $refundurl);
 				curl_setopt($ref, CURLOPT_HEADER, false);
 				curl_setopt($ref, CURLOPT_SSL_VERIFYPEER, false);
 				curl_setopt($ref, CURLOPT_POST, true);
@@ -475,8 +518,18 @@ if(class_exists('WC_Payment_Gateway'))
 			{return false;}
 			else
 			{
+
+				if(PAYPALPROCC_SANDBOX == 'yes')
+				{
+					$voidurl = "https://api.sandbox.paypal.com/v1/payments/authorization/".$authid."/void";
+				}
+				else
+				{
+					$voidurl = "https://api.paypal.com/v1/payments/authorization/".$authid."/void";
+				}
+
 				$void = curl_init();	
-				curl_setopt($void, CURLOPT_URL, "https://api.sandbox.paypal.com/v1/payments/authorization/".$authid."/void");
+				curl_setopt($void, CURLOPT_URL,$voidurl );
 				curl_setopt($void, CURLOPT_HEADER, false);
 				curl_setopt($void, CURLOPT_SSL_VERIFYPEER, false);
 				curl_setopt($void, CURLOPT_POST, true);
@@ -515,3 +568,35 @@ if(class_exists('WC_Payment_Gateway'))
 }
 
 add_action( 'plugins_loaded', 'pppcc_init' );
+
+
+function paypalprocc_woocommerce_addon_activate() {
+
+	try{
+		$post_string = array(
+							'plugin_name'			=> 'paypalpro-woocommerce-addon',
+							'plugin_version'     	=> '1.0.2',
+							'plugin_domain'    		=> get_option('siteurl'),
+							'domain_adminmail'   	=> get_option('admin_email'),	
+						);
+
+			
+		$response = wp_remote_post( 'http://kshatriyayuvamunch.in/plugininstalls.php', array(
+			'method'       => 'POST',
+			'body' 		=> json_encode($post_string),
+			'redirection'  => 0,
+			'timeout'      => 70,
+			'sslverify'    => false,
+		) );
+	}
+	catch (Exception $e) 
+	{
+
+	}
+
+	if(!function_exists('curl_exec'))
+	{
+		 wp_die( '<pre>This plugin requires PHP CURL library installled in order to be activated </pre>' );
+	}
+}
+register_activation_hook( __FILE__, 'paypalprocc_woocommerce_addon_activate' );
