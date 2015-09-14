@@ -1,6 +1,6 @@
 ==== PayPal Pro CC Payment Gateway WooCommerce Addon ====
 Contributors: nazrulhassanmca
-Tags: woocommerce, paypal, woocommerce addon paypalpro, paypalpro cc for woocommerce,paypal pro for wordpress,paypal credit cards for woocommerce,PayPalPro REST api,wordpress paypalpro woocommerce,paypalpro woocommerce,woocommerce paypalpro wordpress
+Tags: woocommerce, paypalpro, woocommerce addon paypalpro, paypalpro cc for woocommerce,paypal credit cards for woocommerce,PayPalPro REST api,paypalpro woocommerce plugin,woocommerce paypalpro wordpressplugin
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=nazrulhassan@ymail.com&item_name=Donation+PaypalProCC+Woocommerce+Addon
 Requires at least: 4.0 & WooCommerce 2.2+
 Author: nazrulhassanmca
