@@ -57,6 +57,7 @@ This plugin acts as an addon for woocommerce to add a payment method for WooComm
 12. This plugin does support Refunds in woocommmerce interface
 13. This plugin captures installation stats for research purpose only it will not be shared with anyone in any case.
 14. Paypal Servers sometimes throw Internal Service Error during testing Multiple times with test credit card No. In that case try changing Card No. This may be due to different location of Buyer(This Point Is for TEST MODE Only)
+15. Unable to refund in Non USD currency : The original transactions were run in Other Currency like (JPY), but you don't have a JPY balance in your PayPal account -- hence, all of the transactions you've run in JPY are sitting in 'unclaimed' status
 
 See Below for REST API Supported Countries
 

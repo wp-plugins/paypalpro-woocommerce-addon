@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: PayPal Pro Credit Cards WooCommerce Addon
+ * Plugin Name: PayPal Payments Pro WooCommerce Addon
  * Plugin URI: https://wordpress.org/plugins/paypalpro-woocommerce-addon/
  * Description: This plugin adds a feature in wocommerce for customers to pay with Credit Cards Via Paypal Payment Pro.
  * Version: 1.0.2
@@ -33,7 +33,7 @@ if(class_exists('WC_Payment_Gateway'))
 		$this->method_title     = 'PayPal Pro Cards Settings';		
 		$this->init_form_fields();
 		$this->init_settings();
-		$this->supports                 = array(  'products',  'refunds');
+		$this->supports                 = array('default_credit_card_form', 'products',  'refunds');
 		$this->title               	  = $this->get_option( 'pppcc_title' );
 		$this->pppcc_appid      		  = $this->get_option( 'pppcc_appid' );
 		$this->pppcc_secret     		  = $this->get_option( 'pppcc_secret' );
@@ -150,6 +150,14 @@ if(class_exists('WC_Payment_Gateway'))
   		}
 
 
+  		function is_available() {
+            if ( ! in_array( get_woocommerce_currency(), apply_filters( 'paypalprocc_woocommerce_supported_currencies', array( 'USD', 'GBP', 'CAD', 'CAD', 'EUR', 'JPY' ) ) ) ) return false;
+
+            if(empty($this->pppcc_appid) || empty($this->pppcc_secret)) return false;
+
+            return true;
+        }
+
 
   		/*Get Icon*/
 		public function get_icon() {
@@ -180,50 +188,6 @@ if(class_exists('WC_Payment_Gateway'))
 		/*Get Icon*/
 
 
-
-
-		public function payment_fields()
-		{			
-	?>
-		<table>
-		    <tr>
-		    	<td><label for="pppcc_cardno"><?php echo __( 'Card No.', 'woocommerce') ?></label></td>
-			<td><input type="text" name="pppcc_cardno" class="input-text" placeholder="Credit Card No" /></td>
-		    </tr>
-		    <tr>
-		    	<td><label class="" for="pppcc_expiration_date"><?php echo __( 'Expiration date', 'woocommerce') ?>.</label></td>
-			<td>
-			   <select name="pppcc_expmonth">
-			      <option value=""><?php _e( 'Month', 'woocommerce' ) ?></option>
-			      <option value='01'>01</option>
-			      <option value='02'>02</option>
-			      <option value='03'>03</option>
-			      <option value='04'>04</option>
-			      <option value='05'>05</option>
-			      <option value='06'>06</option>
-			      <option value='07'>07</option>
-			      <option value='08'>08</option>
-			      <option value='09'>09</option>
-			      <option value='10'>10</option>
-			      <option value='11'>11</option>
-			      <option value='12'>12</option>  
-			    </select>
-			    <select name="pppcc_expyear">
-			      <option value=""><?php _e( 'Year', 'woocommerce' ) ?></option><?php
-			      $years = array();
-			      for ( $i = date( 'y' ); $i <= date( 'y' ) + 15; $i ++ ) {
-				printf( '<option value="20%u">20%u</option>', $i, $i );
-			      } ?>
-			    </select>
-			</td>
-		    </tr>
-		    <tr>
-		    	<td><label for="pppcc_cardcvv"><?php echo __( 'Card CVC', 'woocommerce') ?></label></td>
-			<td><input type="text" name="pppcc_cardcvv" class="input-text" placeholder="CVC" /></td>
-		    </tr>
-		</table>
-	        <?php  
-		} // end of public function payment_fields()
 		
 		/*Get or Set access token if needed renew and save to db*/
 		public function getsetaccesstoken()
@@ -325,7 +289,7 @@ if(class_exists('WC_Payment_Gateway'))
 		$wc_order 	= new WC_Order( $order_id );
 		$grand_total 	= $wc_order->order_total;
 		
-		$cardtype = $this->get_card_type(sanitize_text_field($_POST['pppcc_cardno']));
+		$cardtype = $this->get_card_type(sanitize_text_field($_POST['paypalprocc-card-number']));
 		
 		if(!in_array($cardtype ,$this->pppcc_cardtypes ))
          		{
@@ -340,11 +304,15 @@ if(class_exists('WC_Payment_Gateway'))
 		
 		
 		//End of function to check IP
+        $pppcc_cardno     = sanitize_text_field(str_replace(' ','',$_POST['paypalprocc-card-number']));
+		$pppcc_cardcvv    = sanitize_text_field($_POST['paypalprocc-card-cvc']);
+
+		$exp_date         = explode( "/", sanitize_text_field($_POST['paypalprocc-card-expiry']));
+		$pppcc_expmonth        = str_replace( ' ', '', $exp_date[0]);
+		$pppcc_expyear         = str_replace( ' ', '',$exp_date[1]);
+		if (strlen($pppcc_expyear) == 2) {   $pppcc_expyear += 2000;  }
 		  
-		$pppcc_cardno   = sanitize_text_field($_POST['pppcc_cardno']);
-		$pppcc_expmonth = sanitize_text_field($_POST['pppcc_expmonth']);
-		$pppcc_expyear  = sanitize_text_field($_POST['pppcc_expyear']);
-		$pppcc_cardcvv  = sanitize_text_field($_POST['pppcc_cardcvv']);
+	
 		$pppcc_cardtype = $this->get_card_type($pppcc_cardno); 
 		$access_token   = $this->getsetaccesstoken() ;
 	
@@ -376,7 +344,7 @@ if(class_exists('WC_Payment_Gateway'))
 				    {
 				      "amount":{
 				        "total":"'.$grand_total.'",
-				        "currency":"USD"
+				        "currency":"'.get_woocommerce_currency().'"
 				      },
 				      "description":"'.get_bloginfo('blogname').' Order #'.$wc_order->get_order_number().'"
 				    }
@@ -409,11 +377,22 @@ if(class_exists('WC_Payment_Gateway'))
 		{
 			
 			$wc_order->add_order_note( __( 'Paypal payment completed at. '.$paymentarray['create_time'].' with Charge ID = '.$paymentarray['id'].' and State='.$paymentarray['state'] , 'woocommerce' ) );
-			//$wc_order->add_order_note( __( 'Full Payment Details. '.$paymentresult, 'woocommerce' ) );
 			
 			$wc_order->payment_complete($paymentarray['id']);
 			
 			add_post_meta( $order_id, '_'.$order_id.'_'.$paymentarray['id'].'_metas', $paymentresult);
+
+			//echo "<pre>"; print_r($paymentarray); var_dump($paymentarray); die;
+
+			if("sale" == $paymentarray['intent'] && "approved" == $paymentarray['state'] )
+		    {
+		    	add_post_meta( $order_id, '_paypalprocc_charge_status', 'charge_auth_captured');
+		    }
+
+		    if("authorize" == $paymentarray['intent'] && "approved" == $paymentarray['state'] )
+		    {
+		    	add_post_meta( $order_id, '_paypalprocc_charge_status', 'charge_auth_only');
+		    }
 			
 			return array (
 			  'result'   => 'success',
@@ -467,7 +446,7 @@ if(class_exists('WC_Payment_Gateway'))
 				  "amount":
 				  {
 				    "total": "'.$amount.'",
-				    "currency": "USD"
+				    "currency": "'.get_woocommerce_currency().'"
 				  }
 				}';
 
@@ -578,3 +557,122 @@ function paypalprocc_woocommerce_addon_activate() {
 	}
 }
 register_activation_hook( __FILE__, 'paypalprocc_woocommerce_addon_activate' );
+
+
+/*Plugin Settings Link*/
+function paypalprocc_woocommerce_settings_link( $links ) {
+    $settings_link = '<a href="admin.php?page=wc-settings&tab=checkout&section=wc_pppcc_gateway">' . __( 'Settings' ) . '</a>';
+    array_push( $links, $settings_link );
+  	return $links;
+}
+$plugin = plugin_basename( __FILE__ );
+add_filter( "plugin_action_links_$plugin", 'paypalprocc_woocommerce_settings_link' );
+
+/*Settings Link*/
+
+
+
+/*Capture Charge*/
+
+function paypalprocc_capture_meta_box() {
+	global $post;
+	$chargestatus = get_post_meta( $post->ID, '_paypalprocc_charge_status', true );
+	if($chargestatus == 'charge_auth_only')
+	{
+			add_meta_box(
+				'paypalprocc_capture_chargeid',
+				__( 'Capture Payment for Order', 'woocommerce' ),
+				'paypalprocc_capture_meta_box_callback',
+				'shop_order',
+				'side',
+				'default'
+			);
+	}
+}
+add_action( 'add_meta_boxes', 'paypalprocc_capture_meta_box' );
+
+
+function paypalprocc_capture_meta_box_callback( $post ) {
+
+	//charge_auth_only, charge_auth_captured, charge_auth_captured_later
+	echo '<input type="checkbox" name="_paypalprocc_capture_charge" value="1"/>&nbsp;Check & Save Order to Capture';
+}
+
+
+/*Execute charge on order save*/
+function paypalprocc_capture_meta_box_action($order_id, $items )
+{
+	if(isset($items['_paypalprocc_capture_charge']) && (1 ==$items['_paypalprocc_capture_charge']) ) 
+	{
+	//	global $post;
+		
+		$wc_order 	= new WC_Order( $order_id );
+		$trx_id		= get_post_meta( $order_id , '_transaction_id', true );
+		$trx_metas   = get_post_meta( $order_id , '_'.$order_id.'_'.$trx_id.'_metas',true);
+		$trx_metas_val = json_decode($trx_metas,true);
+		
+		$authid     = @$trx_metas_val['transactions'][0]['related_resources'][0]['authorization']['id'] ;
+		$authamount = @$trx_metas_val['transactions'][0]['related_resources'][0]['authorization']['amount']['total'] ;
+		$authcurrcy = @$trx_metas_val['transactions'][0]['related_resources'][0]['authorization']['amount']['currency'] ;
+		
+		if(class_exists('WC_Pppcc_Gateway'))
+		{
+			$paypalproccpg = new WC_Pppcc_Gateway();
+			$access_token = $paypalproccpg->getsetaccesstoken() ;
+
+			if($paypalproccpg->pppcc_sandbox == 'yes')
+			{
+				$captureurl = "https://api.sandbox.paypal.com/v1/payments/authorization/".$authid."/capture";
+			}
+			else
+			{
+				$captureurl = "https://api.paypal.com/v1/payments/authorization/".$authid."/capture";
+			}
+
+		}
+
+
+		$data_string =	'{
+						  "amount":{
+						    "currency":"'.$authcurrcy.'",
+						    "total":"'.$authamount.'"
+						  },
+						  "is_final_capture":true
+						}';
+
+		$cap = curl_init();	
+		curl_setopt($cap, CURLOPT_URL, $captureurl);
+		curl_setopt($cap, CURLOPT_HEADER, false);
+		curl_setopt($cap, CURLOPT_SSL_VERIFYPEER, false);
+		curl_setopt($cap, CURLOPT_POST, true);
+		curl_setopt($cap, CURLOPT_RETURNTRANSFER, true);                                                                     
+		curl_setopt($cap, CURLOPT_CUSTOMREQUEST, "POST");                                                                     
+		curl_setopt($cap, CURLOPT_POSTFIELDS, $data_string);                                                                       
+		curl_setopt($cap, CURLOPT_HTTPHEADER, array(                                                                          
+					'Content-Type: application/json; charset=utf-8', 
+					'Authorization: Bearer '.$access_token,
+					'Content-Length:'.strlen($data_string))      
+			);                                                                                                                   
+	
+		$captureresult = curl_exec($cap);
+		curl_close($cap);
+		
+		$capturearray = json_decode($captureresult,true);
+
+		if($capturearray['id'])
+		{
+			$wc_order = new WC_Order($order_id);
+			$wc_order->add_order_note( __( 'Capture for '.$capturearray['parent_payment'].' completed at. '.$capturearray['create_time'].' with ID = '.$capturearray['id'].' and State='.$capturearray['state'] , 'woocommerce' ) );
+			add_post_meta( $order_id, '_'.$order_id.'_'.$capturearray['id'].'_metas', $captureresult);
+			update_post_meta( $order_id, '_paypalprocc_charge_status', 'charge_auth_captured_later');
+		}	
+		else
+		{
+			$wc_order->add_order_note($captureresult ,'woocommerce');
+		}
+
+	}	
+
+}
+add_action ("woocommerce_saved_order_items", "paypalprocc_capture_meta_box_action", 10,2);
+/*Execute charge on order save*/
