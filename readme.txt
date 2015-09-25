@@ -25,7 +25,7 @@ This plugin acts as an addon for woocommerce to add a payment method for WooComm
 14. Single checkbox to put it in Authorize or Authorize & Capture.
 15. This plugin Support to accept card types with dynamic card logo at checkout.
 16. This plugin does support Refunds in woocommmerce interface
-17. This plugin does support Capture in woocommmerce interface
+17. This plugin does support Capture in woocommmerce interface **BUT** it will only cature the initially authorized amount if your order total increases somehow its going to fail.
 18. The Transaction details array returned from gateway are added to post meta of wordpress 
 
 == Screenshots ==
@@ -52,13 +52,12 @@ This plugin acts as an addon for woocommerce to add a payment method for WooComm
 6. This plugin does not store Card Details anywhere.
 7. This plugin requires CURL OpenSSL installed 
 8. This Plugin will only work for **PayPal Pro merchant account** In supported Countries
-9. For country support please check 
+9. For country support please check Screeenshot tab
 10. This plugin currently supports USD,CAD,EUR,JPY & GBP based on store base currency.
-11. This plugin does not support Pre Order or Subscriptions 
-12. This plugin does support Refunds in woocommmerce interface
-13. This plugin captures installation stats for research purpose only it will not be shared with anyone in any case.
-14. Paypal Servers sometimes throw Internal Service Error during testing Multiple times with test credit card No. In that case try changing Card No. This may be due to different location of Buyer(This Point Is for TEST MODE Only)
-15. Unable to refund in Non USD currency : The original transactions were run in Other Currency like (JPY), but you don't have a JPY balance in your PayPal account -- hence, all of the transactions you've run in JPY are sitting in 'unclaimed' status
+11. This plugin does not support Pre Order or Subscriptions however you can contact me to add PreOrder feature exclusively.
+12. This plugin support Refunds in woocommmerce interface
+13. Paypal Servers sometimes throw Internal Service Error during testing Multiple times with test credit card No. In that case try changing Card No. This may be due to different location of Buyer(This Point Is for TEST MODE Only)
+14. Unable to refund in Non USD currency : The original transactions were run in Other Currency like (JPY), but you don't have a JPY balance in your PayPal account -- hence, all of the transactions you've run in JPY are sitting in 'unclaimed' status
 
 See Below for REST API Supported Countries
 
