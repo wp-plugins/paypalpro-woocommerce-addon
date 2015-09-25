@@ -66,11 +66,12 @@ See Below for REST API Supported Countries
 
 
 == Changelog ==
-2015.09.25 - Version 1.0.2
+2015.09.24 - Version 1.0.2
 	
 	1. Added default credit card form
 	2. Added feature to capture authorized transaction from woocommerce order page
-	3. Added Support for other Base currency like USD,CAD,EUR,JPY & GBP if store base currency is different this gateway will not be visible 
+	3. Added Support for other Base currency like USD,CAD,EUR,JPY & GBP if store base currency is different this gateway will not be visible
+	4. Added a feature to hide Payment form if no app id/secret key have been added.
 
 2015.08.24 - Version 1.0.2
 
