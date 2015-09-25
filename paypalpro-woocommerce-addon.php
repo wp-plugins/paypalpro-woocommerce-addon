@@ -9,6 +9,7 @@
  * License: GPL2
  */
 
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 function pppcc_init()
 {
 
