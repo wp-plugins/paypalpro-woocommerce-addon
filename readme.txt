@@ -52,7 +52,7 @@ This plugin acts as an addon for woocommerce to add a payment method for WooComm
 7. This plugin requires CURL OpenSSL installed 
 8. This Plugin will only work for **PayPal Pro merchant account** In supported Countries
 9. For country support please check 
-10. This plugin currently supports USD but On line no 379 and 470 of the main pugin file you can change the currency code in which you like to accept the payments like Pound sterling (GBP),Canadian dollar (CAD),Euro (EUR),Japanese yen (JPY).
+10. This plugin currently supports USD,CAD,EUR,JPY & GBP based on store base currency.
 11. This plugin does not support Pre Order or Subscriptions 
 12. This plugin does support Refunds in woocommmerce interface
 13. This plugin captures installation stats for research purpose only it will not be shared with anyone in any case.
