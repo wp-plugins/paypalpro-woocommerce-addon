@@ -25,7 +25,8 @@ This plugin acts as an addon for woocommerce to add a payment method for WooComm
 14. Single checkbox to put it in Authorize or Authorize & Capture.
 15. This plugin Support to accept card types with dynamic card logo at checkout.
 16. This plugin does support Refunds in woocommmerce interface
-17. The Transaction details array returned from gateway are added to post meta of wordpress 
+17. This plugin does support Capture in woocommmerce interface
+18. The Transaction details array returned from gateway are added to post meta of wordpress 
 
 == Screenshots ==
 
